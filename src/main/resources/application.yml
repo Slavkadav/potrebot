@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      host: "localhost"
+      database: potrebot
+      username: root
+      password: root
+      port: 27017
