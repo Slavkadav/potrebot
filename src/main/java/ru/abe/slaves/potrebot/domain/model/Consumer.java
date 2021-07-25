@@ -1,6 +1,5 @@
 package ru.abe.slaves.potrebot.domain.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,10 +18,10 @@ public class Consumer {
     private UUID uid = UUID.randomUUID();
 
     private int userId;
-    private double moneySpent;
+    private long moneySpent;
     private LocalDateTime addTime = LocalDateTime.now();
 
-    public Consumer(int fromId, double sum) {
+    public Consumer(int fromId, long sum) {
         this.userId = fromId;
         this.moneySpent = sum;
     }

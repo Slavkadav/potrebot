@@ -8,7 +8,6 @@ import ru.abe.slaves.potrebot.web.model.VkMessage;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -30,7 +29,7 @@ public class MessageProcessingService {
         var sumYearMatcher = sumYearPattern.matcher(text);
 
         if (spentMatcher.find()) {
-            saveMoneySpent(vkMessage, Double.parseDouble(spentMatcher.group(1)));
+            saveMoneySpent(vkMessage, Integer.parseInt(spentMatcher.group(1)));
         } else if (sumYearMatcher.find()) {
             countSpentForYear(vkMessage);
         } else if (sumMonthMatcher.find()) {
@@ -66,18 +65,10 @@ public class MessageProcessingService {
     }
 
 
-    private void saveMoneySpent(VkMessage message, double moneySpent) {
+    private void saveMoneySpent(VkMessage message, int moneySpent) {
         int fromId = message.getFromId();
-        Optional<Consumer> consumerOptional = consumersRepository.findFirstByUserId(fromId);
-        if (consumerOptional.isPresent()) {
-            var consumer = consumerOptional.get();
-            consumer.setMoneySpent(consumer.getMoneySpent() + moneySpent);
-            consumersRepository.save(consumer);
-        } else {
-            consumersRepository.save(new Consumer(fromId, moneySpent));
-        }
+        consumersRepository.save(new Consumer(fromId, moneySpent));
         vkService.sendMessage(message.getChatId(), "Записал");
     }
-
 
 }
