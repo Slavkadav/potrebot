@@ -1,6 +1,7 @@
 package ru.abe.slaves.potrebot;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.abe.slaves.potrebot.domain.model.Consumer;
 import ru.abe.slaves.potrebot.domain.repository.ConsumersRepository;
@@ -21,6 +22,7 @@ public class MessageProcessingService {
     private final ConsumersRepository consumersRepository;
     private final VkService vkService;
 
+    @Async
     public void processMessage(VkMessage vkMessage) {
         String text = vkMessage.getText();
         var spentMatcher = spentPattern.matcher(text);
