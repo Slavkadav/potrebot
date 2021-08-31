@@ -5,8 +5,9 @@ import java.time.LocalDateTime
 import java.util.*
 
 
-data class Consumer(val userId: Int, val moneySpent: Long) {
-    @Id
-    val uid: UUID = UUID.randomUUID()
-    val addTime: LocalDateTime = LocalDateTime.now()
-}
+data class Consumer(
+    var userId: Int,
+    var moneySpent: Long,
+    @Id var uid: UUID = UUID.randomUUID(),
+    var addTime: LocalDateTime = LocalDateTime.now()
+)
