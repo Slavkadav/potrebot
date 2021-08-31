@@ -20,6 +20,7 @@ open class MessageProcessingService(
     private val sumMonthPattern = Regex("\\[\\S+]\\W*сколько за месяц?", RegexOption.IGNORE_CASE)
     private val sumYearPattern = Regex("\\[\\S+]\\W*сколько за год?", RegexOption.IGNORE_CASE)
     private val cancelPattern = Regex("\\[\\S+]\\W*отмена")
+    private val allChatSummary = Regex("\\[\\S+]\\W*общая потреба")
 
     @Async
     open fun processMessage(vkMessage: VkMessage) {
@@ -35,9 +36,16 @@ open class MessageProcessingService(
             countSpentForAllTime(vkMessage)
         } else if (cancelPattern.containsMatchIn(text)) {
             cancelLastOperation(vkMessage)
+        } else if (allChatSummary.containsMatchIn(text)) {
+            countAllSpent(vkMessage)
         } else {
             vkService.sendMessage(vkMessage.chatId, "Я вас таки не понял. Таки шо вы от меня хотите?")
         }
+    }
+
+    private fun countAllSpent(message: VkMessage) {
+        val sum = consumersRepository.findSum()
+        vkService.sendMessage(message.chatId, "Этот чат напотребил уже на $sum. Мда, конечно")
     }
 
     private fun cancelLastOperation(message: VkMessage) {

@@ -36,4 +36,15 @@ class RepositoryTests {
         assertThat(allByUserId).size().isEqualTo(1)
         assertThat(allByUserId[0].uid).isEqualTo(consumer.uid)
     }
+
+    @Test
+    fun shouldReturnSum() {
+        val consumer = Consumer(1, 1000)
+        repo.save(consumer)
+        val consumer2 = Consumer(2, 2000)
+        repo.save(consumer2)
+
+        val sum = repo.findSum()
+        assertThat(sum).isEqualTo(3000)
+    }
 }
