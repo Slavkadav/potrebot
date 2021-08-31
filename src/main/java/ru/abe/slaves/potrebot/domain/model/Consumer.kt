@@ -7,7 +7,7 @@ import java.util.*
 
 data class Consumer(
     @Id
-    var uid: UUID = UUID.randomUUID(),
+    val uid: UUID = UUID.randomUUID(),
     val userId: Int,
     val moneySpent: Long,
     val addTime: LocalDateTime = LocalDateTime.now()
