@@ -41,14 +41,17 @@ open class MessageProcessingService(
             countAllSpent(vkMessage)
         } else if (allTag.containsMatchIn(text)) {
             reactToAllTag(vkMessage)
-        }
-        else {
+        } else {
             vkService.sendMessage(vkMessage.chatId, "Я вас таки не понял. Таки шо вы от меня хотите?")
         }
     }
 
     private fun reactToAllTag(vkMessage: VkMessage) {
-        vkService.sendMessage(vkMessage.chatId, "Опять тут @${vkMessage.fromId} использовал оллтег. Осуждаем.")
+        val userInfo = vkService.loadUserInfo(vkMessage.fromId) ?: return
+        vkService.sendMessage(
+            vkMessage.chatId,
+            "Опять тут @${userInfo.screenName}(${userInfo.firstName}) использует оллтег. Осуждаем."
+        )
     }
 
     private fun countAllSpent(message: VkMessage) {

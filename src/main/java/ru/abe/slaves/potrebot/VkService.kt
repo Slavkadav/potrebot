@@ -6,6 +6,8 @@ import com.vk.api.sdk.client.actors.GroupActor
 import com.vk.api.sdk.exceptions.ApiException
 import com.vk.api.sdk.exceptions.ClientException
 import com.vk.api.sdk.httpclient.HttpTransportClient
+import com.vk.api.sdk.objects.users.Fields
+import com.vk.api.sdk.objects.users.responses.GetResponse
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -41,6 +43,21 @@ class VkService {
         } catch (e: ClientException) {
             log.error("Error occured", e)
         }
+    }
+
+    fun loadUserInfo(userId: Int): GetResponse? {
+        try {
+            return vkApiClient.users()
+                .get(groupActor)
+                .userIds(userId.toString())
+                .fields(Fields.SCREEN_NAME)
+                .execute()[0]
+        }catch (e: ApiException) {
+            log.error("Error occured", e)
+        } catch (e: ClientException) {
+            log.error("Error occured", e)
+        }
+        return null
     }
 
 }

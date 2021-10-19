@@ -7,10 +7,12 @@ private const val CHAT_PEER_PREFIX = 2000000000
 
 data class VkMessage(
     val date: Date,
-    @JsonProperty("from_id") val fromId: Int,
+    @JsonProperty("from_id")
+    val fromId: Int,
     val id: Int,
     val out: Int,
-    @JsonProperty("peer_id") val peerId: Int,
+    @JsonProperty("peer_id")
+    val peerId: Int,
     val text: String
 ) {
     val chatId: Int
