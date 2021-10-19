@@ -21,6 +21,7 @@ open class MessageProcessingService(
     private val sumYearPattern = Regex("\\[\\S+]\\W*сколько за год?", RegexOption.IGNORE_CASE)
     private val cancelPattern = Regex("\\[\\S+]\\W*отмена")
     private val allChatSummary = Regex("\\[\\S+]\\W*общая потреба")
+    private val allTag = "[@*](все|all)".toRegex(RegexOption.IGNORE_CASE)
 
     @Async
     open fun processMessage(vkMessage: VkMessage) {
@@ -38,9 +39,16 @@ open class MessageProcessingService(
             cancelLastOperation(vkMessage)
         } else if (allChatSummary.containsMatchIn(text)) {
             countAllSpent(vkMessage)
-        } else {
+        } else if (allTag.containsMatchIn(text)) {
+            reactToAllTag(vkMessage)
+        }
+        else {
             vkService.sendMessage(vkMessage.chatId, "Я вас таки не понял. Таки шо вы от меня хотите?")
         }
+    }
+
+    private fun reactToAllTag(vkMessage: VkMessage) {
+        vkService.sendMessage(vkMessage.chatId, "Опять тут @${vkMessage.fromId} использовал оллтег. Осуждаем.")
     }
 
     private fun countAllSpent(message: VkMessage) {
