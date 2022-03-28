@@ -1,6 +1,7 @@
 package ru.abe.slaves.potrebot
 
 import org.slf4j.LoggerFactory
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,6 +21,11 @@ class EventController(private val messageProcessingService: MessageProcessingSer
         if (MESSAGE_TYPE == vkEvent.type) {
             messageProcessingService.processMessage(vkEvent.content.message)
         }
+        return "ok"
+    }
+
+    @GetMapping
+    fun handleGet(): String {
         return "ok"
     }
 }
