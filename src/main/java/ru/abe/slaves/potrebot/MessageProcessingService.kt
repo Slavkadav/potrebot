@@ -26,7 +26,7 @@ open class MessageProcessingService(
     @Async
     open fun processMessage(vkMessage: VkMessage) {
         val text = vkMessage.text
-        if (text.startsWith("\\")) {
+        if (text.startsWith("\\") || text.startsWith("/")) {
             return
         }
         if (spentPattern.containsMatchIn(text)) {
