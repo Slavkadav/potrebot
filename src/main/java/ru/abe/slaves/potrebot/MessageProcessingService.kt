@@ -26,6 +26,9 @@ open class MessageProcessingService(
     @Async
     open fun processMessage(vkMessage: VkMessage) {
         val text = vkMessage.text
+        if (text.startsWith("\\")) {
+            return
+        }
         if (spentPattern.containsMatchIn(text)) {
             val matchResult = spentPattern.find(text)
             matchResult!!.groups[1]?.let { saveMoneySpent(vkMessage, it.value.toInt()) }

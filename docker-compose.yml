@@ -9,6 +9,15 @@ services:
     - "80:8080"
     depends_on:
       - mongo
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+        reservations:
+          memory: 128m
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
   mongo:
     image: mongo
     restart: always
