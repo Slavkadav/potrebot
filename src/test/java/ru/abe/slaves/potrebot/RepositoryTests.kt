@@ -2,22 +2,38 @@ package ru.abe.slaves.potrebot
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 import ru.abe.slaves.potrebot.domain.model.Consumer
 import ru.abe.slaves.potrebot.domain.repository.ConsumersRepository
 
-@ActiveProfiles("test")
+@Disabled
+@Testcontainers
 @DataMongoTest
-@ExtendWith(SpringExtension::class)
+@ActiveProfiles("test")
 class RepositoryTests {
 
     @Autowired
     lateinit var repo: ConsumersRepository
+
+    companion object {
+        @Container
+        val container: MongoDBContainer = MongoDBContainer("mongo")
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun properties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.data.mongodb.uri", container::getReplicaSetUrl)
+        }
+    }
 
     @BeforeEach
     fun cleanup() = repo.deleteAll()
