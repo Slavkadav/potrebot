@@ -56,41 +56,45 @@ open class MessageProcessingService(
     }
 
     private fun countAllSpent(message: VkMessage) {
-        val sum = consumersRepository.findSum()
-        vkService.sendMessage(message.chatId, "Этот чат напотребил уже на $sum. Мда, конечно")
+        consumersRepository.findSum()
+            .subscribe { vkService.sendMessage(message.chatId, "Этот чат напотребил уже на $it. Мда, конечно") }
     }
 
     private fun cancelLastOperation(message: VkMessage) {
-        val lastOperation = consumersRepository.findFirstByUserIdOrderByAddTimeDesc(message.fromId)
-        lastOperation?.let { consumersRepository.delete(lastOperation) }
-        vkService.sendMessage(message.chatId, "Галочка, у нас отмена!")
+        consumersRepository.findFirstByUserIdOrderByAddTimeDesc(message.fromId)
+            .mapNotNull { it?.let { consumersRepository.delete(it) } }
+            .subscribe { vkService.sendMessage(message.chatId, "Галочка, у нас отмена!") }
     }
 
     private fun countSpentForAllTime(message: VkMessage) {
         val consumers = consumersRepository.findAllByUserId(message.fromId)
-        val sum = consumers.sumOf { it.moneySpent }
-        vkService.sendMessage(message.chatId, "За все время ты потребил на $sum. Снимаю шляпу!")
+        consumers.map { it.moneySpent }
+            .reduce { t, u -> t + u }
+            .map { vkService.sendMessage(message.chatId, "За все время ты потребил на $it. Снимаю шляпу!") }
+            .subscribe()
     }
 
     private fun countSpentForMonth(message: VkMessage) {
         val start = LocalDateTime.now().minus(1, ChronoUnit.MONTHS)
         val end = LocalDateTime.now()
-        val consumers = consumersRepository.findAllByUserIdAndAddTimeBetween(message.fromId, start, end)
-        val sum = consumers.sumOf { it.moneySpent }
-        vkService.sendMessage(message.chatId, "За месяц ты потребил на $sum. Достойно!")
+        consumersRepository.findAllByUserIdAndAddTimeBetween(message.fromId, start, end)
+            .map { it.moneySpent }
+            .reduce { t, u -> t + u }
+            .subscribe { vkService.sendMessage(message.chatId, "За месяц ты потребил на $it. Достойно!") }
     }
 
     private fun countSpentForYear(message: VkMessage) {
         val start = LocalDateTime.now().minus(1, ChronoUnit.YEARS)
         val end = LocalDateTime.now()
-        val consumers = consumersRepository.findAllByUserIdAndAddTimeBetween(message.fromId, start, end)
-        val sum = consumers.sumOf { it.moneySpent }
-        vkService.sendMessage(message.chatId, "За год ты потребил на $sum. Вау!")
+        consumersRepository.findAllByUserIdAndAddTimeBetween(message.fromId, start, end)
+            .map { it.moneySpent }
+            .reduce { t, u -> t + u }
+            .subscribe { vkService.sendMessage(message.chatId, "За год ты потребил на $it. Вау!") }
     }
 
     private fun saveMoneySpent(message: VkMessage, moneySpent: Int) {
         val fromId = message.fromId
         consumersRepository.save(Consumer(fromId, moneySpent.toLong()))
-        vkService.sendMessage(message.chatId, "Записал")
+            .subscribe { vkService.sendMessage(message.chatId, "Записал") }
     }
 }
