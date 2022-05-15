@@ -1,4 +1,4 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://root:root@mongo:27017/potrebot
+      uri: mongodb://root:root@mongo:27017/potrebot?authSource=admin

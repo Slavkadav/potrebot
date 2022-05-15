@@ -1,7 +1,6 @@
 package ru.abe.slaves.potrebot
 
 import lombok.RequiredArgsConstructor
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import ru.abe.slaves.potrebot.domain.model.Consumer
 import ru.abe.slaves.potrebot.domain.repository.ConsumersRepository
@@ -23,7 +22,6 @@ open class MessageProcessingService(
     private val allChatSummary = Regex("\\[\\S+]\\W*общая потреба")
     private val allTag = "[@*](все|all)".toRegex(RegexOption.IGNORE_CASE)
 
-    @Async
     open fun processMessage(vkMessage: VkMessage) {
         val text = vkMessage.text
         if (text.startsWith("\\") || text.startsWith("/")) {
