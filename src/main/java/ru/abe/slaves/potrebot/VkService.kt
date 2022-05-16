@@ -6,6 +6,8 @@ import com.vk.api.sdk.client.actors.GroupActor
 import com.vk.api.sdk.exceptions.ApiException
 import com.vk.api.sdk.exceptions.ClientException
 import com.vk.api.sdk.httpclient.HttpTransportClient
+import com.vk.api.sdk.objects.callback.longpoll.responses.GetLongPollEventsResponse
+import com.vk.api.sdk.objects.groups.responses.GetLongPollServerResponse
 import com.vk.api.sdk.objects.users.Fields
 import com.vk.api.sdk.objects.users.responses.GetResponse
 import lombok.extern.slf4j.Slf4j
@@ -52,12 +54,21 @@ class VkService {
                 .userIds(userId.toString())
                 .fields(Fields.SCREEN_NAME)
                 .execute()[0]
-        }catch (e: ApiException) {
+        } catch (e: ApiException) {
             log.error("Error occured", e)
         } catch (e: ClientException) {
             log.error("Error occured", e)
         }
         return null
+    }
+
+
+    fun getLongPollServer(): GetLongPollServerResponse? {
+        return vkApiClient.groups().getLongPollServer(groupActor, GROUP_ID).execute()
+    }
+
+    fun longPoll(server: String, key: String, ts: String): GetLongPollEventsResponse? {
+        return vkApiClient.longPoll().getEvents(server, key, ts).waitTime(25).execute()
     }
 
 }
