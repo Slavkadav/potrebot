@@ -1,6 +1,7 @@
 package ru.abe.slaves.potrebot
 
 import com.google.gson.Gson
+import com.vk.api.sdk.exceptions.LongPollServerKeyExpiredException
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Service
@@ -37,7 +38,11 @@ class LongPollService(
                             messageProcessingService.processMessage(event.content.message)
                         }
                     }
-                } catch (e: Exception) {
+                } catch (e: LongPollServerKeyExpiredException) {
+                    // по истечении ключа перезапускаем процесс
+                    run(*args)
+                }
+                catch (e: Exception) {
                     val incrementAndGet = atomicInteger.incrementAndGet()
                     if (incrementAndGet >= 5) {
                         throw e
