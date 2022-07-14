@@ -34,12 +34,14 @@ class VkService {
         groupActor = GroupActor(GROUP_ID, KEY)
     }
 
-    fun sendMessage(chatId: Int, message: String?) {
+    fun sendMessage(chatId: Int, message: String?, attachment: String? = null) {
         try {
             vkApiClient.messages().send(groupActor)
                 .chatId(chatId)
                 .randomId(random.nextInt())
-                .message(message).execute()
+                .message(message)
+                .attachment(attachment)
+                .execute()
         } catch (e: ApiException) {
             log.error("Error occured", e)
         } catch (e: ClientException) {
