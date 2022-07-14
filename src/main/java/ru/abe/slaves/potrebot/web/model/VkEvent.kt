@@ -1,10 +1,10 @@
 package ru.abe.slaves.potrebot.web.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 data class VkEvent(
     val type: String?,
-    @JsonProperty("object") val content: VkEventContent,
-    @JsonProperty("group_id") val groupId: Long = 0,
-    @JsonProperty("event_id") val eventId: String
+    @SerializedName("object") val content: VkEventContent,
+    @SerializedName("group_id") val groupId: Long = 0,
+    @SerializedName("event_id") val eventId: String
 )
