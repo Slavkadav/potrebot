@@ -22,7 +22,7 @@ class DiceGeneratorWorker(private val vkService: VkService): Worker {
         val d=arrayOf<Int>(0,0)
         val countValueDice=arrayOf<Int>(0,0)
         var i:Int=0
-        val patternForText ="(\\d{1,3}[кК]\\d{1,3})|(\\d{1,3}[dD]\\d{1,3})|(\\d{1,3}[дД]\\d{1,3})".toRegex()
+        val patternForText ="[Кк]убас.[1234567890]{1,3}[DdКкДд][1234567890]{1,3}".toRegex()
         val matchForText = patternForText.find(text)
         val XdY=matchForText?.value.toString()
         val patternForDice="\\d{1,3}".toRegex()
