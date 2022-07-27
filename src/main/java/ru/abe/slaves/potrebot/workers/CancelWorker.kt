@@ -9,7 +9,7 @@ import ru.abe.slaves.potrebot.web.model.VkMessage
 class CancelWorker(
     private val consumersRepository: ConsumersRepository, private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}[Оо]тмена")
+    override fun regex(): Regex = Regex("${regexPrefix}отмена")
 
     override fun reactToMessage(vkMessage: VkMessage) {
         cancelLastOperation(vkMessage)

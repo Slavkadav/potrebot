@@ -11,7 +11,7 @@ class SpentWorker(
     private val consumersRepository: ConsumersRepository,
     private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("$regexPrefix[Пп]отреба.\\d+")
+    override fun regex(): Regex = Regex("${regexPrefix}потреба.\\d+")
 
     override fun reactToMessage(vkMessage: VkMessage) {
         val matchResult = regex().find(vkMessage.text)

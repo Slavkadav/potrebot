@@ -12,7 +12,7 @@ class SumYearWorker(
     private val consumersRepository: ConsumersRepository,
     private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}[Сс]колько за год?", RegexOption.IGNORE_CASE)
+    override fun regex(): Regex = Regex("${regexPrefix}сколько за год", RegexOption.IGNORE_CASE)
 
     override fun reactToMessage(vkMessage: VkMessage) {
         countSpentForYear(vkMessage)

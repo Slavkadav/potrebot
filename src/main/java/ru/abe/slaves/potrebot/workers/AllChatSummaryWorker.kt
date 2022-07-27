@@ -9,7 +9,7 @@ import ru.abe.slaves.potrebot.web.model.VkMessage
 class AllChatSummaryWorker(
     private val consumersRepository: ConsumersRepository, private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}[Оо]бщая потреба")
+    override fun regex(): Regex = Regex("${regexPrefix}общая потреба", RegexOption.IGNORE_CASE)
 
     override fun reactToMessage(vkMessage: VkMessage) {
         countAllChatSpent(vkMessage)

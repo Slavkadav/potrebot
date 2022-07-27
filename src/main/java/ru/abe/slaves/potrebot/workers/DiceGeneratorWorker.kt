@@ -1,68 +1,66 @@
 package ru.abe.slaves.potrebot.workers
 
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import ru.abe.slaves.potrebot.VkService
 import ru.abe.slaves.potrebot.web.model.VkMessage
+import kotlin.math.abs
 
+@Order(1)
 @Component
-class DiceGeneratorWorker(private val vkService: VkService): Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}[Кк]убас.[1234567890]{1,3}[DdКкДд][1234567890]{1,3}", RegexOption.IGNORE_CASE)
+class DiceGeneratorWorker(private val vkService: VkService) : Worker {
+    override fun regex(): Regex = Regex("${regexPrefix}кубас.([0-9]{1,3})[dкд]([0-9]{1,3})", RegexOption.IGNORE_CASE)
 
     override fun reactToMessage(vkMessage: VkMessage) {
         reactToThrowDiceXdY(vkMessage)
     }
 
-    private fun reactToThrowDiceXdY(vkMessage: VkMessage){
-        val answer = ThrowDice(vkMessage.text)
-        vkService.sendMessage(vkMessage.chatId, answer )
+    private fun reactToThrowDiceXdY(vkMessage: VkMessage) {
+        val answer = throwDice(vkMessage.text)
+        vkService.sendMessage(vkMessage.chatId, answer)
     }
 
-    private fun ThrowDice(text: String): String {
-        var sum=0;
-        val d=arrayOf<Int>(0,0)
-        val countValueDice=arrayOf<Int>(0,0)
-        var i:Int=0
-        val patternForText ="[Кк]убас.[1234567890]{1,3}[DdКкДд][1234567890]{1,3}".toRegex()
-        val matchForText = patternForText.find(text)
-        val XdY=matchForText?.value.toString()
-        val patternForDice="\\d{1,3}".toRegex()
-        val matchForDices = patternForDice.findAll(XdY)
-        matchForDices.forEach{ f ->
-            d[i]=f.value.toInt()
-            i+=1
-        }
-        if(d[0]==0){
+    private fun throwDice(text: String): String {
+        // Накидать рандомных чисел в пределе указанном в сообщении
+        val diceGroups = regex().find(text)?.groupValues
+        val numberOfDice = diceGroups?.get(1)?.toInt() ?: 0
+        val diceSize = diceGroups?.get(2)?.toInt() ?: 0
+
+        if (numberOfDice == 0) {
             return "Не получится сломать, брат"
         }
-        var res="("
-        for(i in 1..d[0]){
-            var dice = (1..d[1]).random()
-            if(d[1]==6){
-                when(dice){
-                    1,2->countValueDice[0]+=1
-                    5,6->countValueDice[1]+=1
-                }
+
+        val diceResults = mutableMapOf<Int, Int>()
+        repeat(numberOfDice) {
+            val diceValue = (1..diceSize).random()
+            diceResults.computeIfPresent(diceValue) { _, value ->
+                value + 1
             }
-            if(i==d[0]){
-                res+="$dice"
-            }
-            else{
-                res+="$dice, "
-            }
-            sum+=dice
+            diceResults.putIfAbsent(diceValue, 1)
         }
-        res+= ") = $sum\n"
-        if(d[1]==6){
-            if(countValueDice[0]>=d[0]/2){
-                res+=" Лооох! "
+        // Вывод результата
+        val diceResultSum = diceResults.map { it.key * it.value }.sum()
+
+        val diceResultList = diceResults.entries.flatMap { generateSequence { it.key }.take(it.value) }
+
+        val result = "$diceResultList = $diceResultSum"
+
+        // Особые результаты
+        if (diceSize == 6) {
+            val middleValue = numberOfDice / 2
+            // 5+ больше половины
+            if (diceResults.filter { it.key >= 5 }.map { it.value }.sum() >= middleValue) {
+                return "$result\nЧел, хорош!"
             }
-            if(countValueDice[1]>=d[0]/2){
-                res+=" Чел, хорош! "
+            // 2- больше половины
+            if (diceResults.filter { it.key <= 2 }.map { it.value }.sum() >= middleValue) {
+                return "$result\nЛооох!"
             }
-            if(countValueDice[0]==countValueDice[1]){
-                res+=" Тупа по стате "
+            // среднее = размерность куба + 1 пополам
+            if (abs(middleValue - diceResultSum / numberOfDice) < 0.5) {
+                return "$result\nТупа по стате!"
             }
         }
-        return res
+        return result
     }
 }

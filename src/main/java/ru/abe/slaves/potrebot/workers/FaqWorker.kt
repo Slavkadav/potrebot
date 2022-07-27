@@ -6,7 +6,7 @@ import ru.abe.slaves.potrebot.web.model.VkMessage
 
 @Component
 class FaqWorker(private val vkService: VkService) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}[Фф]ак", RegexOption.IGNORE_CASE)
+    override fun regex(): Regex = Regex("${regexPrefix}фак", RegexOption.IGNORE_CASE)
 
     override fun reactToMessage(vkMessage: VkMessage) {
         faqMessage(vkMessage)
