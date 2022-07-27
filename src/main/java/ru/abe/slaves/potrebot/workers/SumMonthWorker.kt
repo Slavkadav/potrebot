@@ -12,7 +12,7 @@ class SumMonthWorker(
     private val consumersRepository: ConsumersRepository,
     private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}сколько за месяц?", RegexOption.IGNORE_CASE)
+    override fun regex(): Regex = Regex("${regexPrefix}сколько за месяц", RegexOption.IGNORE_CASE)
 
     override fun reactToMessage(vkMessage: VkMessage) {
         countSpentForMonth(vkMessage)

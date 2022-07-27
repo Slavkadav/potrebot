@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 @Component
 class PotrebaDiceWorker(private val vkService: VkService) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}Потрекуб", RegexOption.IGNORE_CASE)
+    override fun regex(): Regex = Regex("${regexPrefix}потребкуб", RegexOption.IGNORE_CASE)
 
     override fun reactToMessage(vkMessage: VkMessage) {
         throwPotrebaDice(vkMessage)
