@@ -6,6 +6,6 @@ sealed interface Worker {
     val regexPrefix: String
         get() = "\\[\\S+]\\W*"
 
-    fun regex(): Regex
-    fun reactToMessage(vkMessage: VkMessage)
+    suspend fun regex(): Regex
+    suspend fun reactToMessage(vkMessage: VkMessage)
 }

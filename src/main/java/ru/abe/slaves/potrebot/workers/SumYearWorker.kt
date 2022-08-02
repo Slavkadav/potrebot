@@ -1,5 +1,8 @@
 package ru.abe.slaves.potrebot.workers
 
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.reduce
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Component
 import ru.abe.slaves.potrebot.VkService
 import ru.abe.slaves.potrebot.domain.repository.ConsumersRepository
@@ -12,18 +15,18 @@ class SumYearWorker(
     private val consumersRepository: ConsumersRepository,
     private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}сколько за год", RegexOption.IGNORE_CASE)
+    override suspend fun regex(): Regex = Regex("${regexPrefix}сколько за год", RegexOption.IGNORE_CASE)
 
-    override fun reactToMessage(vkMessage: VkMessage) {
+    override suspend fun reactToMessage(vkMessage: VkMessage) {
         countSpentForYear(vkMessage)
     }
 
-    private fun countSpentForYear(message: VkMessage) {
+    private suspend fun countSpentForYear(message: VkMessage) {
         val start = LocalDateTime.now().minus(1, ChronoUnit.YEARS)
         val end = LocalDateTime.now()
-        consumersRepository.findAllByUserIdAndAddTimeBetween(message.fromId, start, end)
+        val moneySpent = consumersRepository.findAllByUserIdAndAddTimeBetween(message.fromId, start, end).asFlow()
             .map { it.moneySpent }
             .reduce { t, u -> t + u }
-            .subscribe { vkService.sendMessage(message.chatId, "За год ты потребил на $it. Вау!") }
+        vkService.sendMessage(message.chatId, "За год ты потребил на $moneySpent. Вау!")
     }
 }

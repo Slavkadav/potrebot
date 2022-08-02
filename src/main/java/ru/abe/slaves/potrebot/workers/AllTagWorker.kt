@@ -8,9 +8,9 @@ import ru.abe.slaves.potrebot.web.model.VkMessage
 class AllTagWorker(
     private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = "[@*](все|all)".toRegex(RegexOption.IGNORE_CASE)
+    override suspend fun regex(): Regex = "[@*](все|all)".toRegex(RegexOption.IGNORE_CASE)
 
-    override fun reactToMessage(vkMessage: VkMessage) {
+    override suspend fun reactToMessage(vkMessage: VkMessage) {
         reactToAllTag(vkMessage)
     }
 

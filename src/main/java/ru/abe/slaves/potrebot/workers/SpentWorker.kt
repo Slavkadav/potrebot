@@ -1,5 +1,9 @@
 package ru.abe.slaves.potrebot.workers
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.reactor.awaitSingleOrNull
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import ru.abe.slaves.potrebot.VkService
 import ru.abe.slaves.potrebot.domain.model.Consumer
@@ -11,16 +15,21 @@ class SpentWorker(
     private val consumersRepository: ConsumersRepository,
     private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}потреба.(\\d+)")
+    override suspend fun regex(): Regex = Regex("${regexPrefix},\\s?(\\d+)$")
 
-    override fun reactToMessage(vkMessage: VkMessage) {
+    override suspend fun reactToMessage(vkMessage: VkMessage) {
         val matchResult = regex().find(vkMessage.text)
         matchResult!!.groups[1]?.let { saveMoneySpent(vkMessage, it.value.toInt()) }
     }
 
-    private fun saveMoneySpent(message: VkMessage, moneySpent: Int) {
-        val fromId = message.fromId
-        consumersRepository.save(Consumer(fromId, moneySpent.toLong()))
-            .subscribe { vkService.sendMessage(message.chatId, "Записал") }
+    private suspend fun saveMoneySpent(message: VkMessage, moneySpent: Int) {
+        withContext(Dispatchers.IO) {
+            launch {
+                val fromId = message.fromId
+                consumersRepository.save(Consumer(fromId, moneySpent.toLong())).awaitSingleOrNull()
+            }
+        }
+
+        vkService.sendMessage(message.chatId, "Записал")
     }
 }

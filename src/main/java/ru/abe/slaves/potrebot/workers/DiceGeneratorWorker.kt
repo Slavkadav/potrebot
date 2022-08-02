@@ -9,18 +9,18 @@ import kotlin.math.abs
 @Order(1)
 @Component
 class DiceGeneratorWorker(private val vkService: VkService) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}кубас.([0-9]{1,3})[dкд]([0-9]{1,3})", RegexOption.IGNORE_CASE)
+    override suspend fun regex(): Regex = Regex("${regexPrefix}кубас.([0-9]{1,3})[dкд]([0-9]{1,3})", RegexOption.IGNORE_CASE)
 
-    override fun reactToMessage(vkMessage: VkMessage) {
+    override suspend fun reactToMessage(vkMessage: VkMessage) {
         reactToThrowDiceXdY(vkMessage)
     }
 
-    private fun reactToThrowDiceXdY(vkMessage: VkMessage) {
+    private suspend fun reactToThrowDiceXdY(vkMessage: VkMessage) {
         val answer = throwDice(vkMessage.text)
         vkService.sendMessage(vkMessage.chatId, answer)
     }
 
-    private fun throwDice(text: String): String {
+    private suspend fun throwDice(text: String): String {
         // Накидать рандомных чисел в пределе указанном в сообщении
         val diceGroups = regex().find(text)?.groupValues
         val numberOfDice = diceGroups?.get(1)?.toInt() ?: 0

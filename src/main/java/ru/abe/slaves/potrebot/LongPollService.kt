@@ -2,6 +2,7 @@ package ru.abe.slaves.potrebot
 
 import com.google.gson.Gson
 import com.vk.api.sdk.exceptions.LongPollServerKeyExpiredException
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Service
@@ -21,7 +22,7 @@ class LongPollService(
 
     private val atomicInteger: AtomicInteger = AtomicInteger()
 
-    override fun run(vararg args: String?) {
+    override fun run(vararg args: String?): Unit = runBlocking{
         vkService.getLongPollServer()?.also {
             var ts = it.ts
             while (true) {

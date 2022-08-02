@@ -8,9 +8,9 @@ import ru.abe.slaves.potrebot.web.model.VkMessage
 class MeowWorker(
     private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}мяу")
+    override suspend fun regex(): Regex = Regex("${regexPrefix}мяу")
 
-    override fun reactToMessage(vkMessage: VkMessage) {
+    override suspend fun reactToMessage(vkMessage: VkMessage) {
         reactToMeow(vkMessage)
     }
 

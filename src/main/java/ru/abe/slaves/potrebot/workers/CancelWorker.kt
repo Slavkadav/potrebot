@@ -1,5 +1,10 @@
 package ru.abe.slaves.potrebot.workers
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import ru.abe.slaves.potrebot.VkService
 import ru.abe.slaves.potrebot.domain.repository.ConsumersRepository
@@ -9,16 +14,21 @@ import ru.abe.slaves.potrebot.web.model.VkMessage
 class CancelWorker(
     private val consumersRepository: ConsumersRepository, private val vkService: VkService
 ) : Worker {
-    override fun regex(): Regex = Regex("${regexPrefix}отмена")
+    override suspend fun regex(): Regex = Regex("${regexPrefix}отмена")
 
-    override fun reactToMessage(vkMessage: VkMessage) {
+    override suspend fun reactToMessage(vkMessage: VkMessage) {
         cancelLastOperation(vkMessage)
     }
 
-    private fun cancelLastOperation(message: VkMessage) {
-        consumersRepository.findFirstByUserIdOrderByAddTimeDesc(message.fromId)
-            .mapNotNull { it?.let { consumersRepository.delete(it) } }
-            .subscribe { vkService.sendMessage(message.chatId, "Галочка, у нас отмена!") }
+    private suspend fun cancelLastOperation(message: VkMessage) {
+        withContext(Dispatchers.IO) {
+            launch {
+                val consumer = consumersRepository.findFirstByUserIdOrderByAddTimeDesc(message.fromId).awaitSingleOrNull()
+                consumer?.also { consumersRepository.delete(it).awaitSingle() }
+            }
+        }
+
+        vkService.sendMessage(message.chatId, "Галочка, у нас отмена!")
     }
 
 }

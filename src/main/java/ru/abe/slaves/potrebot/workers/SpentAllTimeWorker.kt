@@ -11,9 +11,9 @@ class SpentAllTimeWorker(
     private val vkService: VkService
 ) : Worker {
 
-    override fun regex(): Regex = Regex("${regexPrefix}сколько", RegexOption.IGNORE_CASE)
+    override suspend fun regex(): Regex = Regex("${regexPrefix}сколько", RegexOption.IGNORE_CASE)
 
-    override fun reactToMessage(vkMessage: VkMessage) {
+    override suspend fun reactToMessage(vkMessage: VkMessage) {
         countSpentForAllTime(vkMessage)
     }
 

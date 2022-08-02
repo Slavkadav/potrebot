@@ -12,7 +12,7 @@ open class MessageProcessingService(
     private val vkService: VkService,
     private val workers: List<Worker>
 ) {
-    open fun processMessage(vkMessage: VkMessage) {
+    open suspend fun processMessage(vkMessage: VkMessage) {
         val text = vkMessage.text
         if (text.startsWith("\\") || text.startsWith("/")) {
             return
