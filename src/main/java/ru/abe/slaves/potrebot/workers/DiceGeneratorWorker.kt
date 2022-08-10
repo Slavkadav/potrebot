@@ -9,7 +9,7 @@ import kotlin.math.abs
 @Order(1)
 @Component
 class DiceGeneratorWorker(private val vkService: VkService) : Worker {
-    override suspend fun regex(): Regex = Regex("${regexPrefix}кубас.([0-9]{1,3})[dкд]([0-9]{1,3})", RegexOption.IGNORE_CASE)
+    override suspend fun regex(): Regex = Regex("${regexPrefix}кинь.([0-9]{1,3})[dкд]([0-9]{1,3})", RegexOption.IGNORE_CASE)
 
     override suspend fun reactToMessage(vkMessage: VkMessage) {
         reactToThrowDiceXdY(vkMessage)

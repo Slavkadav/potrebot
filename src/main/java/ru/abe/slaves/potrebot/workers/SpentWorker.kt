@@ -15,7 +15,7 @@ class SpentWorker(
     private val consumersRepository: ConsumersRepository,
     private val vkService: VkService
 ) : Worker {
-    override suspend fun regex(): Regex = Regex("${regexPrefix},\\s?(\\d+)$")
+    override suspend fun regex(): Regex = Regex("${regexPrefix}(\\d+)$")
 
     override suspend fun reactToMessage(vkMessage: VkMessage) {
         val matchResult = regex().find(vkMessage.text)
