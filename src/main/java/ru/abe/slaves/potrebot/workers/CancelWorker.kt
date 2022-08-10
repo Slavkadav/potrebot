@@ -17,17 +17,14 @@ class CancelWorker(
 
     override suspend fun reactToMessage(vkMessage: VkMessage) {
         cancelLastOperation(vkMessage)
+        vkService.sendMessage(vkMessage.chatId, "Галочка, у нас отмена!")
     }
 
-    private suspend fun cancelLastOperation(message: VkMessage) {
+    private suspend fun cancelLastOperation(message: VkMessage) =
         withContext(Dispatchers.IO) {
             launch {
                 val consumer = consumersRepository.findFirstByUserIdOrderByAddTimeDesc(message.fromId).awaitSingleOrNull()
                 consumer?.also { consumersRepository.delete(it).awaitSingleOrNull() }
             }
         }
-
-        vkService.sendMessage(message.chatId, "Галочка, у нас отмена!")
-    }
-
 }

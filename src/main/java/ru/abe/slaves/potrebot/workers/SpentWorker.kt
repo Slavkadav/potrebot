@@ -20,16 +20,15 @@ class SpentWorker(
     override suspend fun reactToMessage(vkMessage: VkMessage) {
         val matchResult = regex().find(vkMessage.text)
         matchResult!!.groups[1]?.let { saveMoneySpent(vkMessage, it.value.toInt()) }
+
+        vkService.sendMessage(vkMessage.chatId, "Записал")
     }
 
-    private suspend fun saveMoneySpent(message: VkMessage, moneySpent: Int) {
+    private suspend fun saveMoneySpent(message: VkMessage, moneySpent: Int) =
         withContext(Dispatchers.IO) {
             launch {
                 val fromId = message.fromId
                 consumersRepository.save(Consumer(fromId, moneySpent.toLong())).awaitSingleOrNull()
             }
         }
-
-        vkService.sendMessage(message.chatId, "Записал")
-    }
 }
