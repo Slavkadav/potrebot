@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Service
 import ru.abe.slaves.potrebot.web.model.VkEvent
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.TimeUnit
 
 const val MESSAGE_TYPE = "message_new"
 
@@ -19,8 +19,6 @@ class LongPollService(
 
     private val log = LoggerFactory.getLogger(LongPollService::class.java)
     private val gson = Gson()
-
-    private val atomicInteger: AtomicInteger = AtomicInteger()
 
     override fun run(vararg args: String?): Unit = runBlocking{
         vkService.getLongPollServer()?.also {
@@ -44,11 +42,8 @@ class LongPollService(
                     run(*args)
                 }
                 catch (e: Exception) {
-                    val incrementAndGet = atomicInteger.incrementAndGet()
-                    if (incrementAndGet >= 5) {
-                        throw e
-                    }
                     log.error("Error on execution ", e)
+                    TimeUnit.SECONDS.sleep(10)
                 }
             }
         }
